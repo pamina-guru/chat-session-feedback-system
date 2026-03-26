@@ -20,8 +20,11 @@ type Props = {
 
 export default function AdminFeedbackFormClient({ initialData }: Props) {
     const [form, setForm] = useState(initialData);
+    const [loading, setLoading] = useState(false);
+    const [saved, setSaved] = useState(false);
 
     const updateField = (field: keyof FeedbackFormConfig, value: string) => {
+        setSaved(false);
         setForm((prev) => ({
             ...prev,
             [field]: value,
@@ -29,6 +32,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
     };
 
     const updateRatingLabel = (index: number, value: string) => {
+        setSaved(false);
         const updatedLabels = [...form.ratingLabels];
         updatedLabels[index] = value;
 
@@ -36,6 +40,32 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
             ...prev,
             ratingLabels: updatedLabels,
         }));
+    };
+
+    const handleSave = async () => {
+        setLoading(true);
+        setSaved(false);
+
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/enterprises/${form.enterpriseId}/session-feedback-form`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(form),
+                }
+            );
+
+            if (!res.ok) throw new Error("Failed");
+
+            setSaved(true);
+        } catch {
+            alert("Failed to save changes.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -107,6 +137,21 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                     onChange={(e) => updateField("expiredReplyText", e.target.value)}
                     className="w-full rounded-lg border bg-transparent px-4 py-3"
                 />
+            </div>
+
+            {/* Save Button */}
+            <div className="pt-4">
+                <button
+                    onClick={handleSave}
+                    disabled={loading}
+                    className="rounded-lg bg-white px-6 py-3 font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
+                >
+                    {loading ? "Saving..." : "Save Changes"}
+                </button>
+
+                {saved && (
+                    <p className="mt-3 text-green-400">Changes saved successfully.</p>
+                )}
             </div>
         </div>
     );

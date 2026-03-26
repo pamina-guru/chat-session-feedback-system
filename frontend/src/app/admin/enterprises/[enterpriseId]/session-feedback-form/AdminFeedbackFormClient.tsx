@@ -139,7 +139,6 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                 />
             </div>
 
-            {/* Save Button */}
             <div className="pt-4">
                 <button
                     onClick={handleSave}
@@ -152,6 +151,34 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                 {saved && (
                     <p className="mt-3 text-green-400">Changes saved successfully.</p>
                 )}
+            </div>
+
+            <div className="mt-10 rounded-lg border p-6">
+                <h2 className="text-xl font-bold">Live Preview</h2>
+
+                <div className="mt-6 rounded-lg border p-6">
+                    <h3 className="text-2xl font-bold">{form.headerText}</h3>
+
+                    {form.headerDescription && (
+                        <p className="mt-3 text-gray-400">{form.headerDescription}</p>
+                    )}
+
+                    <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-5">
+                        {form.ratingLabels.map((label, index) => (
+                            <div
+                                key={index}
+                                className="rounded-lg border px-4 py-3 text-left"
+                            >
+                                <div className="font-semibold">{index + 1}</div>
+                                <div className="mt-1 text-sm text-gray-400">{label}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {form.footerText && (
+                        <p className="mt-6 text-sm text-gray-500">{form.footerText}</p>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -22,9 +22,11 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
     const [form, setForm] = useState(initialData);
     const [loading, setLoading] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const updateField = (field: keyof FeedbackFormConfig, value: string) => {
         setSaved(false);
+        setError(null);
         setForm((prev) => ({
             ...prev,
             [field]: value,
@@ -33,6 +35,8 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
 
     const updateRatingLabel = (index: number, value: string) => {
         setSaved(false);
+        setError(null);
+
         const updatedLabels = [...form.ratingLabels];
         updatedLabels[index] = value;
 
@@ -45,6 +49,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
     const handleSave = async () => {
         setLoading(true);
         setSaved(false);
+        setError(null);
 
         try {
             const res = await fetch(
@@ -58,11 +63,29 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                 }
             );
 
-            if (!res.ok) throw new Error("Failed");
+            if (!res.ok) {
+                let message = "Failed to save changes.";
+
+                try {
+                    const errorData = await res.json();
+
+                    if (errorData?.message) {
+                        message = errorData.message;
+                    }
+                } catch {
+                    // ignore JSON parsing error and keep fallback message
+                }
+
+                throw new Error(message);
+            }
 
             setSaved(true);
-        } catch {
-            alert("Failed to save changes.");
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("Failed to save changes.");
+            }
         } finally {
             setLoading(false);
         }
@@ -141,6 +164,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
 
             <div className="pt-4">
                 <button
+                    type="button"
                     onClick={handleSave}
                     disabled={loading}
                     className="rounded-lg bg-white px-6 py-3 font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
@@ -150,6 +174,10 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
 
                 {saved && (
                     <p className="mt-3 text-green-400">Changes saved successfully.</p>
+                )}
+
+                {error && (
+                    <p className="mt-3 text-red-400">{error}</p>
                 )}
             </div>
 

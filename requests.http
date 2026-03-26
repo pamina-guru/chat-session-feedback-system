@@ -37,3 +37,35 @@ Content-Type: application/json
 {
   "rating": 2
 }
+
+### Update admin feedback form
+PUT http://localhost:8080/api/admin/enterprises/acme-bank/session-feedback-form
+Content-Type: application/json
+
+{
+  "enterpriseId": "acme-bank",
+  "headerText": "Rate your chatbot experience",
+  "headerDescription": "Tell us how helpful the chatbot was.",
+  "footerText": "We value your feedback.",
+  "ratingLabels": ["Terrible", "Bad", "Neutral", "Good", "Excellent"],
+  "thankYouText": "Thanks for your feedback!",
+  "invalidReplyText": "Invalid feedback link.",
+  "expiredReplyText": "This link has expired.",
+  "skipForChannels": ["INSTAGRAM"]
+}
+
+### Invalid admin feedback form update - wrong number of rating labels
+PUT http://localhost:8080/api/admin/enterprises/acme-bank/session-feedback-form
+Content-Type: application/json
+
+{
+  "enterpriseId": "acme-bank",
+  "headerText": "Rate your chatbot experience",
+  "headerDescription": "Tell us how helpful the chatbot was.",
+  "footerText": "We value your feedback.",
+  "ratingLabels": ["Bad", "Okay", "Good"],
+  "thankYouText": "Thanks for your feedback!",
+  "invalidReplyText": "Invalid feedback link.",
+  "expiredReplyText": "This link has expired.",
+  "skipForChannels": ["INSTAGRAM"]
+}

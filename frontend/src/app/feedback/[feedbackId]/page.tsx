@@ -1,5 +1,6 @@
 import { fetchJson } from "@/lib/api";
 import type { PublicFeedbackView } from "@/lib/types";
+import RatingClient from "./RatingClient";
 
 type PublicFeedbackPageProps = {
     params: Promise<{
@@ -64,31 +65,27 @@ export default async function PublicFeedbackPage({ params }: PublicFeedbackPageP
         );
     }
 
+    const formConfig = data.formConfig;
+
     return (
         <main className="min-h-screen p-6">
             <div className="mx-auto max-w-3xl rounded-lg border p-6">
                 <h1 className="text-3xl font-bold">
-                    {data.formConfig?.headerText ?? "Session Feedback"}
+                    {formConfig?.headerText ?? "Session Feedback"}
                 </h1>
 
-                {data.formConfig?.headerDescription && (
-                    <p className="mt-3 text-gray-600">{data.formConfig.headerDescription}</p>
+                {formConfig?.headerDescription && (
+                    <p className="mt-3 text-gray-600">{formConfig.headerDescription}</p>
                 )}
 
-                <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-5">
-                    {data.formConfig?.ratingLabels.map((label, index) => (
-                        <button
-                            key={index}
-                            className="rounded-lg border px-4 py-3 text-left transition hover:bg-neutral-900"
-                        >
-                            <div className="font-semibold">{index + 1}</div>
-                            <div className="mt-1 text-sm text-gray-400">{label}</div>
-                        </button>
-                    ))}
-                </div>
+                <RatingClient
+                    feedbackId={feedbackId}
+                    ratingLabels={formConfig?.ratingLabels ?? ["1", "2", "3", "4", "5"]}
+                    thankYouText={formConfig?.thankYouText ?? "Thank you for your feedback!"}
+                />
 
-                {data.formConfig?.footerText && (
-                    <p className="mt-8 text-sm text-gray-500">{data.formConfig.footerText}</p>
+                {formConfig?.footerText && (
+                    <p className="mt-8 text-sm text-gray-500">{formConfig.footerText}</p>
                 )}
             </div>
         </main>

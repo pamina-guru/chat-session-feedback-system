@@ -1,0 +1,39 @@
+### Invalid rating first
+POST http://localhost:8080/api/public/feedback/fb-valid-001/respond
+Content-Type: application/json
+
+{
+  "rating": 10
+}
+
+### Valid submission
+POST http://localhost:8080/api/public/feedback/fb-valid-001/respond
+Content-Type: application/json
+
+{
+  "rating": 5
+}
+
+### Expired feedback
+POST http://localhost:8080/api/public/feedback/fb-expired-001/respond
+Content-Type: application/json
+
+{
+  "rating": 4
+}
+
+### Already used feedback
+POST http://localhost:8080/api/public/feedback/fb-used-001/respond
+Content-Type: application/json
+
+{
+  "rating": 3
+}
+
+### Invalid feedback id
+POST http://localhost:8080/api/public/feedback/not-found/respond
+Content-Type: application/json
+
+{
+  "rating": 2
+}

@@ -69,5 +69,16 @@ class DataSeeder {
                 )
             )
         }
+
+        if (feedbackRequestRepository.findByFeedbackId("fb-valid-002") == null) {
+            feedbackRequestRepository.save(
+                FeedbackRequest(
+                    feedbackId = "fb-valid-002",
+                    enterpriseId = "acme-bank",
+                    channel = Channel.WEB,
+                    expiresAt = Instant.now().plus(2, ChronoUnit.DAYS)
+                )
+            )
+        }
     }
 }

@@ -18,6 +18,8 @@ type Props = {
     initialData: FeedbackFormConfig;
 };
 
+const CHANNEL_OPTIONS = ["WHATSAPP", "INSTAGRAM", "MESSENGER", "WEB"];
+
 export default function AdminFeedbackFormClient({ initialData }: Props) {
     const [form, setForm] = useState(initialData);
     const [loading, setLoading] = useState(false);
@@ -43,6 +45,18 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
         setForm((prev) => ({
             ...prev,
             ratingLabels: updatedLabels,
+        }));
+    };
+
+    const toggleSkipChannel = (channel: string) => {
+        setSaved(false);
+        setError(null);
+
+        setForm((prev) => ({
+            ...prev,
+            skipForChannels: prev.skipForChannels.includes(channel)
+                ? prev.skipForChannels.filter((c) => c !== channel)
+                : [...prev.skipForChannels, channel],
         }));
     };
 
@@ -73,7 +87,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                         message = errorData.message;
                     }
                 } catch {
-                    // ignore JSON parsing error and keep fallback message
+                    // Keep fallback message if response is not valid JSON
                 }
 
                 throw new Error(message);
@@ -162,6 +176,22 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                 />
             </div>
 
+            <div>
+                <label className="mb-3 block font-semibold">Skip Feedback for Channels</label>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {CHANNEL_OPTIONS.map((channel) => (
+                        <label key={channel} className="flex items-center gap-2 rounded-lg border px-3 py-2">
+                            <input
+                                type="checkbox"
+                                checked={form.skipForChannels.includes(channel)}
+                                onChange={() => toggleSkipChannel(channel)}
+                            />
+                            <span>{channel}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
+
             <div className="pt-4">
                 <button
                     type="button"
@@ -205,6 +235,12 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
 
                     {form.footerText && (
                         <p className="mt-6 text-sm text-gray-500">{form.footerText}</p>
+                    )}
+
+                    {form.skipForChannels.length > 0 && (
+                        <p className="mt-4 text-sm text-gray-400">
+                            Skipped for: {form.skipForChannels.join(", ")}
+                        </p>
                     )}
                 </div>
             </div>

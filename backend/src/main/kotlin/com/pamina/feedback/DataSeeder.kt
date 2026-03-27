@@ -19,6 +19,13 @@ class DataSeeder {
         feedbackFormConfigRepository: FeedbackFormConfigRepository,
         feedbackRequestRepository: FeedbackRequestRepository
     ) = CommandLineRunner {
+        seedFeedbackFormConfig(feedbackFormConfigRepository)
+        seedFeedbackRequests(feedbackRequestRepository)
+    }
+
+    private fun seedFeedbackFormConfig(
+        feedbackFormConfigRepository: FeedbackFormConfigRepository
+    ) {
         if (feedbackFormConfigRepository.findByEnterpriseId("acme-bank") == null) {
             feedbackFormConfigRepository.save(
                 FeedbackFormConfig(
@@ -34,51 +41,92 @@ class DataSeeder {
                 )
             )
         }
+    }
 
-        if (feedbackRequestRepository.findByFeedbackId("fb-valid-001") == null) {
-            feedbackRequestRepository.save(
-                FeedbackRequest(
-                    feedbackId = "fb-valid-001",
-                    enterpriseId = "acme-bank",
-                    channel = Channel.WEB,
-                    expiresAt = Instant.now().plus(2, ChronoUnit.DAYS)
-                )
-            )
-        }
+    private fun seedFeedbackRequests(
+        feedbackRequestRepository: FeedbackRequestRepository
+    ) {
+        val now = Instant.now()
 
-        if (feedbackRequestRepository.findByFeedbackId("fb-expired-001") == null) {
-            feedbackRequestRepository.save(
-                FeedbackRequest(
-                    feedbackId = "fb-expired-001",
-                    enterpriseId = "acme-bank",
-                    channel = Channel.WEB,
-                    expiresAt = Instant.now().minus(2, ChronoUnit.DAYS)
-                )
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-valid-001",
+                enterpriseId = "acme-bank",
+                channel = Channel.WEB,
+                expiresAt = now.plus(2, ChronoUnit.DAYS)
             )
-        }
+        )
 
-        if (feedbackRequestRepository.findByFeedbackId("fb-used-001") == null) {
-            feedbackRequestRepository.save(
-                FeedbackRequest(
-                    feedbackId = "fb-used-001",
-                    enterpriseId = "acme-bank",
-                    channel = Channel.WEB,
-                    expiresAt = Instant.now().plus(2, ChronoUnit.DAYS),
-                    respondedAt = Instant.now().minus(1, ChronoUnit.HOURS),
-                    rating = 4
-                )
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-valid-002",
+                enterpriseId = "acme-bank",
+                channel = Channel.WEB,
+                expiresAt = now.plus(2, ChronoUnit.DAYS)
             )
-        }
+        )
 
-        if (feedbackRequestRepository.findByFeedbackId("fb-valid-002") == null) {
-            feedbackRequestRepository.save(
-                FeedbackRequest(
-                    feedbackId = "fb-valid-002",
-                    enterpriseId = "acme-bank",
-                    channel = Channel.WEB,
-                    expiresAt = Instant.now().plus(2, ChronoUnit.DAYS)
-                )
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-valid-003",
+                enterpriseId = "acme-bank",
+                channel = Channel.WEB,
+                expiresAt = now.plus(2, ChronoUnit.DAYS)
             )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-valid-004",
+                enterpriseId = "acme-bank",
+                channel = Channel.WEB,
+                expiresAt = now.plus(2, ChronoUnit.DAYS)
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-valid-005",
+                enterpriseId = "acme-bank",
+                channel = Channel.WEB,
+                expiresAt = now.plus(2, ChronoUnit.DAYS)
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-expired-001",
+                enterpriseId = "acme-bank",
+                channel = Channel.WEB,
+                expiresAt = now.minus(2, ChronoUnit.DAYS)
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-used-001",
+                enterpriseId = "acme-bank",
+                channel = Channel.WEB,
+                expiresAt = now.plus(2, ChronoUnit.DAYS),
+                respondedAt = now.minus(1, ChronoUnit.HOURS),
+                rating = 4
+            )
+        )
+    }
+
+    private fun saveIfMissing(
+        feedbackRequestRepository: FeedbackRequestRepository,
+        feedbackRequest: FeedbackRequest
+    ) {
+        if (feedbackRequestRepository.findByFeedbackId(feedbackRequest.feedbackId) == null) {
+            feedbackRequestRepository.save(feedbackRequest)
         }
     }
 }

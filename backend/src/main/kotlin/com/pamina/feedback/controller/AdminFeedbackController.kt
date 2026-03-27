@@ -13,6 +13,16 @@ class AdminFeedbackController(
     private val feedbackFormConfigRepository: FeedbackFormConfigRepository
 ) {
 
+    companion object {
+        private const val MAX_HEADER_TEXT_LENGTH = 120
+        private const val MAX_HEADER_DESCRIPTION_LENGTH = 300
+        private const val MAX_FOOTER_TEXT_LENGTH = 200
+        private const val MAX_RATING_LABEL_LENGTH = 30
+        private const val MAX_THANK_YOU_TEXT_LENGTH = 200
+        private const val MAX_INVALID_REPLY_TEXT_LENGTH = 200
+        private const val MAX_EXPIRED_REPLY_TEXT_LENGTH = 200
+    }
+
     @GetMapping("/{enterpriseId}/session-feedback-form")
     fun getFeedbackForm(@PathVariable enterpriseId: String): FeedbackFormConfig? {
         return feedbackFormConfigRepository.findByEnterpriseId(enterpriseId)
@@ -40,16 +50,62 @@ class AdminFeedbackController(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Header text must not be blank.")
         }
 
+        if (request.headerText.length > MAX_HEADER_TEXT_LENGTH) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Header text must not exceed $MAX_HEADER_TEXT_LENGTH characters."
+            )
+        }
+
+        if (!request.headerDescription.isNullOrBlank() &&
+            request.headerDescription.length > MAX_HEADER_DESCRIPTION_LENGTH
+        ) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Header description must not exceed $MAX_HEADER_DESCRIPTION_LENGTH characters."
+            )
+        }
+
+        if (!request.footerText.isNullOrBlank() &&
+            request.footerText.length > MAX_FOOTER_TEXT_LENGTH
+        ) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Footer text must not exceed $MAX_FOOTER_TEXT_LENGTH characters."
+            )
+        }
+
         if (request.thankYouText.isBlank()) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Thank you text must not be blank.")
+        }
+
+        if (request.thankYouText.length > MAX_THANK_YOU_TEXT_LENGTH) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Thank you text must not exceed $MAX_THANK_YOU_TEXT_LENGTH characters."
+            )
         }
 
         if (request.invalidReplyText.isBlank()) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid reply text must not be blank.")
         }
 
+        if (request.invalidReplyText.length > MAX_INVALID_REPLY_TEXT_LENGTH) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Invalid reply text must not exceed $MAX_INVALID_REPLY_TEXT_LENGTH characters."
+            )
+        }
+
         if (request.expiredReplyText.isBlank()) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Expired reply text must not be blank.")
+        }
+
+        if (request.expiredReplyText.length > MAX_EXPIRED_REPLY_TEXT_LENGTH) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Expired reply text must not exceed $MAX_EXPIRED_REPLY_TEXT_LENGTH characters."
+            )
         }
 
         if (request.ratingLabels.size != 5) {
@@ -58,6 +114,13 @@ class AdminFeedbackController(
 
         if (request.ratingLabels.any { it.isBlank() }) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating labels must not be blank.")
+        }
+
+        if (request.ratingLabels.any { it.length > MAX_RATING_LABEL_LENGTH }) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Each rating label must not exceed $MAX_RATING_LABEL_LENGTH characters."
+            )
         }
 
         if (request.skipForChannels.size != request.skipForChannels.distinct().size) {

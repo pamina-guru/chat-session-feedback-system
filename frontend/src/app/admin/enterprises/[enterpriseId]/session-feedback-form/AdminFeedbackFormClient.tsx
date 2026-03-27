@@ -87,7 +87,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                         message = errorData.message;
                     }
                 } catch {
-                    // Keep fallback message if response is not valid JSON
+                    // fallback message
                 }
 
                 throw new Error(message);
@@ -105,145 +105,246 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
         }
     };
 
+    const inputClassName =
+        "w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20";
+
     return (
-        <div className="mt-6 space-y-6">
-            <div>
-                <label className="mb-2 block font-semibold">Header</label>
-                <input
-                    value={form.headerText}
-                    onChange={(e) => updateField("headerText", e.target.value)}
-                    className="w-full rounded-lg border bg-transparent px-4 py-3"
-                />
-            </div>
+        <div className="mt-8 grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
+            <div className="space-y-8">
+                <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+                    <h2 className="text-xl font-semibold text-white">Form Content</h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                        Edit the text and messages shown in the customer feedback form.
+                    </p>
 
-            <div>
-                <label className="mb-2 block font-semibold">Description</label>
-                <textarea
-                    value={form.headerDescription}
-                    onChange={(e) => updateField("headerDescription", e.target.value)}
-                    className="w-full rounded-lg border bg-transparent px-4 py-3"
-                    rows={3}
-                />
-            </div>
-
-            <div>
-                <label className="mb-2 block font-semibold">Footer</label>
-                <input
-                    value={form.footerText}
-                    onChange={(e) => updateField("footerText", e.target.value)}
-                    className="w-full rounded-lg border bg-transparent px-4 py-3"
-                />
-            </div>
-
-            <div>
-                <label className="mb-3 block font-semibold">Rating Labels</label>
-                <div className="grid gap-3 sm:grid-cols-2">
-                    {form.ratingLabels.map((label, index) => (
-                        <input
-                            key={index}
-                            value={label}
-                            onChange={(e) => updateRatingLabel(index, e.target.value)}
-                            className="rounded-lg border bg-transparent px-4 py-3"
-                        />
-                    ))}
-                </div>
-            </div>
-
-            <div>
-                <label className="mb-2 block font-semibold">Thank You Text</label>
-                <input
-                    value={form.thankYouText}
-                    onChange={(e) => updateField("thankYouText", e.target.value)}
-                    className="w-full rounded-lg border bg-transparent px-4 py-3"
-                />
-            </div>
-
-            <div>
-                <label className="mb-2 block font-semibold">Invalid Reply Text</label>
-                <input
-                    value={form.invalidReplyText}
-                    onChange={(e) => updateField("invalidReplyText", e.target.value)}
-                    className="w-full rounded-lg border bg-transparent px-4 py-3"
-                />
-            </div>
-
-            <div>
-                <label className="mb-2 block font-semibold">Expired Reply Text</label>
-                <input
-                    value={form.expiredReplyText}
-                    onChange={(e) => updateField("expiredReplyText", e.target.value)}
-                    className="w-full rounded-lg border bg-transparent px-4 py-3"
-                />
-            </div>
-
-            <div>
-                <label className="mb-3 block font-semibold">Skip Feedback for Channels</label>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                    {CHANNEL_OPTIONS.map((channel) => (
-                        <label key={channel} className="flex items-center gap-2 rounded-lg border px-3 py-2">
+                    <div className="mt-6 space-y-5">
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-200">
+                                Header
+                            </label>
                             <input
-                                type="checkbox"
-                                checked={form.skipForChannels.includes(channel)}
-                                onChange={() => toggleSkipChannel(channel)}
+                                value={form.headerText}
+                                onChange={(e) => updateField("headerText", e.target.value)}
+                                className={inputClassName}
+                                placeholder="Enter form header"
                             />
-                            <span>{channel}</span>
-                        </label>
-                    ))}
-                </div>
-            </div>
+                        </div>
 
-            <div className="pt-4">
-                <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={loading}
-                    className="rounded-lg bg-white px-6 py-3 font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
-                >
-                    {loading ? "Saving..." : "Save Changes"}
-                </button>
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-200">
+                                Description
+                            </label>
+                            <textarea
+                                value={form.headerDescription}
+                                onChange={(e) => updateField("headerDescription", e.target.value)}
+                                className={inputClassName}
+                                rows={4}
+                                placeholder="Enter a short description for the feedback form"
+                            />
+                        </div>
 
-                {saved && (
-                    <p className="mt-3 text-green-400">Changes saved successfully.</p>
-                )}
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-200">
+                                Footer
+                            </label>
+                            <input
+                                value={form.footerText}
+                                onChange={(e) => updateField("footerText", e.target.value)}
+                                className={inputClassName}
+                                placeholder="Enter footer text"
+                            />
+                        </div>
+                    </div>
+                </section>
 
-                {error && (
-                    <p className="mt-3 text-red-400">{error}</p>
-                )}
-            </div>
+                <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+                    <h2 className="text-xl font-semibold text-white">Rating Labels</h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                        Define the five labels customers will see for ratings 1 to 5.
+                    </p>
 
-            <div className="mt-10 rounded-lg border p-6">
-                <h2 className="text-xl font-bold">Live Preview</h2>
-
-                <div className="mt-6 rounded-lg border p-6">
-                    <h3 className="text-2xl font-bold">{form.headerText}</h3>
-
-                    {form.headerDescription && (
-                        <p className="mt-3 text-gray-400">{form.headerDescription}</p>
-                    )}
-
-                    <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-5">
+                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
                         {form.ratingLabels.map((label, index) => (
-                            <div
-                                key={index}
-                                className="rounded-lg border px-4 py-3 text-left"
-                            >
-                                <div className="font-semibold">{index + 1}</div>
-                                <div className="mt-1 text-sm text-gray-400">{label}</div>
+                            <div key={index}>
+                                <label className="mb-2 block text-sm font-medium text-slate-200">
+                                    Rating {index + 1}
+                                </label>
+                                <input
+                                    value={label}
+                                    onChange={(e) => updateRatingLabel(index, e.target.value)}
+                                    className={inputClassName}
+                                    placeholder={`Label for rating ${index + 1}`}
+                                />
                             </div>
                         ))}
                     </div>
+                </section>
 
-                    {form.footerText && (
-                        <p className="mt-6 text-sm text-gray-500">{form.footerText}</p>
-                    )}
+                <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+                    <h2 className="text-xl font-semibold text-white">Response Messages</h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                        Configure the messages shown for successful, invalid, and expired
+                        feedback requests.
+                    </p>
 
-                    {form.skipForChannels.length > 0 && (
-                        <p className="mt-4 text-sm text-gray-400">
-                            Skipped for: {form.skipForChannels.join(", ")}
-                        </p>
-                    )}
-                </div>
+                    <div className="mt-6 space-y-5">
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-200">
+                                Thank You Text
+                            </label>
+                            <input
+                                value={form.thankYouText}
+                                onChange={(e) => updateField("thankYouText", e.target.value)}
+                                className={inputClassName}
+                                placeholder="Enter thank you message"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-200">
+                                Invalid Reply Text
+                            </label>
+                            <input
+                                value={form.invalidReplyText}
+                                onChange={(e) => updateField("invalidReplyText", e.target.value)}
+                                className={inputClassName}
+                                placeholder="Enter invalid link message"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-200">
+                                Expired Reply Text
+                            </label>
+                            <input
+                                value={form.expiredReplyText}
+                                onChange={(e) => updateField("expiredReplyText", e.target.value)}
+                                className={inputClassName}
+                                placeholder="Enter expired link message"
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+                    <h2 className="text-xl font-semibold text-white">Channel Settings</h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                        Select the channels where feedback should be skipped.
+                    </p>
+
+                    <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        {CHANNEL_OPTIONS.map((channel) => {
+                            const checked = form.skipForChannels.includes(channel);
+
+                            return (
+                                <label
+                                    key={channel}
+                                    className={`flex cursor-pointer items-center justify-between rounded-2xl border px-4 py-4 transition ${
+                                        checked
+                                            ? "border-sky-400 bg-sky-400/10"
+                                            : "border-slate-700 bg-slate-950/70 hover:border-slate-500"
+                                    }`}
+                                >
+                                    <div>
+                                        <p className="font-medium text-white">{channel}</p>
+                                        <p className="mt-1 text-sm text-slate-400">
+                                            Skip feedback request for this channel
+                                        </p>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        checked={checked}
+                                        onChange={() => toggleSkipChannel(channel)}
+                                        className="h-4 w-4 accent-sky-400"
+                                    />
+                                </label>
+                            );
+                        })}
+                    </div>
+                </section>
+
+                <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <button
+                            type="button"
+                            onClick={handleSave}
+                            disabled={loading}
+                            className="inline-flex items-center justify-center rounded-2xl bg-sky-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {loading ? "Saving..." : "Save Changes"}
+                        </button>
+
+                        {saved && (
+                            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+                                <p className="text-sm text-emerald-300">
+                                    Changes saved successfully.
+                                </p>
+                            </div>
+                        )}
+
+                        {error && (
+                            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3">
+                                <p className="text-sm text-red-300">{error}</p>
+                            </div>
+                        )}
+                    </div>
+                </section>
             </div>
+
+            <aside className="xl:sticky xl:top-8 xl:self-start">
+                <div className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+                    <p className="text-sm font-medium uppercase tracking-[0.2em] text-sky-400">
+                        Live Preview
+                    </p>
+                    <h2 className="mt-4 text-2xl font-bold text-white">
+                        Public Feedback Form
+                    </h2>
+                    <p className="mt-3 text-sm leading-6 text-slate-400">
+                        This is how the customer-facing form will appear.
+                    </p>
+
+                    <div className="mt-6 rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-inner">
+                        <h3 className="text-2xl font-bold text-white">{form.headerText}</h3>
+
+                        {form.headerDescription && (
+                            <p className="mt-3 text-sm leading-7 text-slate-300">
+                                {form.headerDescription}
+                            </p>
+                        )}
+
+                        <div className="mt-6 grid grid-cols-1 gap-3">
+                            {form.ratingLabels.map((label, index) => (
+                                <div
+                                    key={index}
+                                    className="rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-4"
+                                >
+                                    <div className="text-lg font-bold text-white">{index + 1}</div>
+                                    <div className="mt-2 text-sm leading-6 text-slate-400">
+                                        {label}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {form.footerText && (
+                            <p className="mt-6 border-t border-slate-800 pt-4 text-sm leading-6 text-slate-400">
+                                {form.footerText}
+                            </p>
+                        )}
+
+                        {form.skipForChannels.length > 0 && (
+                            <div className="mt-5 rounded-2xl border border-slate-700 bg-slate-950/70 p-4">
+                                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                                    Skipped Channels
+                                </p>
+                                <p className="mt-2 text-sm text-slate-300">
+                                    {form.skipForChannels.join(", ")}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </aside>
         </div>
     );
 }

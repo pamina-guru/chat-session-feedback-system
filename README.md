@@ -45,27 +45,43 @@ Each enterprise has:
 
 ## ✨ Features
 
-### 🧑‍💼 Admin
-- Load and edit feedback form configuration
-- Configurable fields:
-    - Header text & description
-    - Footer text
-    - Rating labels (5 labels)
-    - Thank you / error / expiry messages
-    - Channel-based skip logic
-- Strong validation with clear error messages
-- Live preview of the feedback form
-- Instant save & publish
+## ✨ Features
 
-### 🌍 Public (Customer)
-- Load feedback form via unique `feedbackId`
-- Submit a rating (1–5)
-- Handles all real-world states:
-    - ✅ Active — submit feedback
-    - ✅ Success — thank you confirmation
-    - ❌ Already responded
-    - ⏰ Expired link
-    - ⚠️ Invalid / not found
+### 🧑‍💼 Admin Portal (Enterprise-Based)
+
+- Multi-tenant support using dynamic `enterpriseId` (e.g., Acme Bank, Uber)
+- Load and manage feedback form configurations per enterprise
+- Fully configurable feedback form fields:
+  - Header text & description
+  - Footer text
+  - Rating labels (exactly 5 labels)
+  - Thank you, error, and expiry messages
+- Channel-based skip logic (WhatsApp, Instagram, Messenger, Web)
+- Strong backend validation with clear error responses
+- Live preview panel for real-time form visualization
+- Instant save and publish behavior
+- Demonstrates both:
+  - Preconfigured enterprise (Acme Bank)
+  - Fully dynamic configurable enterprise (Uber)
+
+---
+
+### 🌍 Public User Portal
+
+- Access feedback forms via unique `feedbackId`
+- Dynamic enterprise-based feedback experience
+- Submit rating (1–5) with validation
+- Handles all real-world feedback states:
+
+  - ✅ **Active** — user can submit feedback
+  - 🎉 **Success** — thank-you confirmation after submission
+  - ❌ **Already Responded** — prevents duplicate submissions
+  - ⏰ **Expired** — feedback link no longer valid
+  - ⚠️ **Invalid** — feedback request not found
+
+- Single-use feedback links enforced
+- Supports multiple active and backup feedback links for demonstration
+- UI dynamically adapts based on backend state and enterprise configuration
 
 ### ⚙️ Backend
 - Feedback form configuration validation

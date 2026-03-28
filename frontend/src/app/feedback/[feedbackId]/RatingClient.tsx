@@ -13,6 +13,9 @@ type SubmitResponse = {
     message: string;
 };
 
+const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+
 export default function RatingClient({
                                          feedbackId,
                                          ratingLabels,
@@ -28,7 +31,7 @@ export default function RatingClient({
 
         try {
             const response = await fetch(
-                `http://localhost:8080/api/public/feedback/${feedbackId}/respond`,
+                `${API_BASE_URL}/api/public/feedback/${feedbackId}/respond`,
                 {
                     method: "POST",
                     headers: {

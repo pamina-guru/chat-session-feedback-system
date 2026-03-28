@@ -100,6 +100,14 @@ export default async function PublicFeedbackPage({
                                 {formConfig.headerDescription}
                             </p>
                         )}
+
+                        {data.expiresAt && (
+                            <p className="mt-2 text-sm text-slate-400">
+                                Expires on: {new Date(data.expiresAt).toLocaleString()}
+                            </p>
+                        )}
+
+
                     </div>
 
                     <RatingClient

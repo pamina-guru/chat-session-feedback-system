@@ -22,6 +22,8 @@ export type PublicFeedbackView = {
     feedbackId: string;
     enterpriseId: string;
     status: FeedbackRequestStatus;
+    expiresAt?: string;
+    respondedAt?: string | null;
     formConfig?: FeedbackFormConfig;
 };
 

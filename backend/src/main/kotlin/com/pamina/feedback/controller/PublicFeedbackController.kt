@@ -34,6 +34,8 @@ class PublicFeedbackController(
             "feedbackId" to feedbackRequest.feedbackId,
             "enterpriseId" to feedbackRequest.enterpriseId,
             "status" to status,
+            "expiresAt" to feedbackRequest.expiresAt,
+            "respondedAt" to feedbackRequest.respondedAt,
             "formConfig" to formConfig
         )
     }
@@ -50,6 +52,8 @@ class PublicFeedbackController(
                 "message" to "Feedback request not found."
             )
 
+        val formConfig = feedbackFormConfigRepository.findByEnterpriseId(feedbackRequest.enterpriseId)
+
         if (feedbackRequest.respondedAt != null) {
             return mapOf(
                 "code" to "ALREADY_RESPONDED",
@@ -60,7 +64,7 @@ class PublicFeedbackController(
         if (feedbackRequest.expiresAt.isBefore(Instant.now())) {
             return mapOf(
                 "code" to "EXPIRED",
-                "message" to "This feedback request has expired."
+                "message" to (formConfig?.expiredReplyText ?: "This feedback request has expired.")
             )
         }
 

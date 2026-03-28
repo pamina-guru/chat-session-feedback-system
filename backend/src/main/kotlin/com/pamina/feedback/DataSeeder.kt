@@ -19,11 +19,11 @@ class DataSeeder {
         feedbackFormConfigRepository: FeedbackFormConfigRepository,
         feedbackRequestRepository: FeedbackRequestRepository
     ) = CommandLineRunner {
-        seedFeedbackFormConfig(feedbackFormConfigRepository)
+        seedFeedbackFormConfigs(feedbackFormConfigRepository)
         seedFeedbackRequests(feedbackRequestRepository)
     }
 
-    private fun seedFeedbackFormConfig(
+    private fun seedFeedbackFormConfigs(
         feedbackFormConfigRepository: FeedbackFormConfigRepository
     ) {
         if (feedbackFormConfigRepository.findByEnterpriseId("acme-bank") == null) {
@@ -41,12 +41,30 @@ class DataSeeder {
                 )
             )
         }
+
+        if (feedbackFormConfigRepository.findByEnterpriseId("uber") == null) {
+            feedbackFormConfigRepository.save(
+                FeedbackFormConfig(
+                    enterpriseId = "uber",
+                    headerText = "How was your support experience?",
+                    headerDescription = "Please rate your recent chat with Uber support.",
+                    footerText = "Your feedback helps us improve future conversations.",
+                    ratingLabels = listOf("Very Poor", "Poor", "Average", "Good", "Excellent"),
+                    thankYouText = "Thank you for sharing your feedback with Uber.",
+                    invalidReplyText = "This Uber feedback link is invalid.",
+                    expiredReplyText = "This Uber feedback link has expired.",
+                    skipForChannels = listOf(Channel.MESSENGER)
+                )
+            )
+        }
     }
 
     private fun seedFeedbackRequests(
         feedbackRequestRepository: FeedbackRequestRepository
     ) {
         val now = Instant.now()
+
+        val april30 = Instant.parse("2026-04-30T23:59:59Z")
 
         saveIfMissing(
             feedbackRequestRepository = feedbackRequestRepository,
@@ -94,7 +112,7 @@ class DataSeeder {
                 feedbackId = "fb-valid-005",
                 enterpriseId = "acme-bank",
                 channel = Channel.WEB,
-                expiresAt = now.plus(2, ChronoUnit.DAYS)
+                expiresAt = april30
             )
         )
 
@@ -119,6 +137,49 @@ class DataSeeder {
                 rating = 4
             )
         )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-valid-006",
+                enterpriseId = "acme-bank",
+                channel = Channel.WEB,
+                expiresAt = april30
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-uber-valid-001",
+                enterpriseId = "uber",
+                channel = Channel.WEB,
+                expiresAt = now.plus(2, ChronoUnit.DAYS)
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-uber-expired-001",
+                enterpriseId = "uber",
+                channel = Channel.WEB,
+                expiresAt = now.minus(2, ChronoUnit.DAYS)
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-uber-used-001",
+                enterpriseId = "uber",
+                channel = Channel.WEB,
+                expiresAt = now.plus(2, ChronoUnit.DAYS),
+                respondedAt = now.minus(1, ChronoUnit.HOURS),
+                rating = 5
+            )
+        )
+
     }
 
     private fun saveIfMissing(

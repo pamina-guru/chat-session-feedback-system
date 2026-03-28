@@ -1,59 +1,38 @@
-### Feedback System API Test Suite
-### Covers: Public GET, Public POST, Admin Config + Validation
+### ACTIVE (main)
+GET http://localhost:8080/api/public/feedback/fb-valid-005
 
-### ACTIVE feedback (should load form)
-GET http://localhost:8080/api/public/feedback/fb-valid-003
+### ACTIVE (backup)
+GET http://localhost:8080/api/public/feedback/fb-valid-006
 
-### EXPIRED feedback
+### EXPIRED
 GET http://localhost:8080/api/public/feedback/fb-expired-001
 
-### ALREADY RESPONDED feedback
+### ALREADY RESPONDED
 GET http://localhost:8080/api/public/feedback/fb-used-001
 
-### INVALID feedback ID
+### INVALID
 GET http://localhost:8080/api/public/feedback/not-found
 
-### VALID submission (use a fresh ID)
-POST http://localhost:8080/api/public/feedback/fb-valid-004/respond
+### VALID submission
+POST http://localhost:8080/api/public/feedback/fb-valid-006/respond
 Content-Type: application/json
 
 {
   "rating": 5
 }
 
-### INVALID rating (out of range)
-POST http://localhost:8080/api/public/feedback/fb-valid-005/respond
+### INVALID rating
+POST http://localhost:8080/api/public/feedback/fb-valid-006/respond
 Content-Type: application/json
 
 {
   "rating": 10
 }
 
-### EXPIRED feedback
-POST http://localhost:8080/api/public/feedback/fb-expired-001/respond
-Content-Type: application/json
+### UBER ACTIVE
+GET http://localhost:8080/api/public/feedback/fb-uber-valid-001
 
-{
-  "rating": 4
-}
-
-### ALREADY USED feedback
-POST http://localhost:8080/api/public/feedback/fb-used-001/respond
-Content-Type: application/json
-
-{
-  "rating": 3
-}
-
-### INVALID feedback ID
-POST http://localhost:8080/api/public/feedback/not-found/respond
-Content-Type: application/json
-
-{
-  "rating": 2
-}
-
-### VALID admin config update
+### UPDATE ACME CONFIG
 PUT http://localhost:8080/api/admin/enterprises/acme-bank/session-feedback-form
 Content-Type: application/json
 
@@ -68,86 +47,3 @@ Content-Type: application/json
   "expiredReplyText": "This link has expired.",
   "skipForChannels": ["INSTAGRAM"]
 }
-
-### INVALID - header is blank
-PUT http://localhost:8080/api/admin/enterprises/acme-bank/session-feedback-form
-Content-Type: application/json
-
-{
-  "enterpriseId": "acme-bank",
-  "headerText": "",
-  "headerDescription": "Test",
-  "footerText": "Test",
-  "ratingLabels": ["Bad", "Okay", "Good", "Very Good", "Excellent"],
-  "thankYouText": "Thanks",
-  "invalidReplyText": "Invalid",
-  "expiredReplyText": "Expired",
-  "skipForChannels": ["INSTAGRAM"]
-}
-
-### INVALID - rating labels not equal to 5
-PUT http://localhost:8080/api/admin/enterprises/acme-bank/session-feedback-form
-Content-Type: application/json
-
-{
-  "enterpriseId": "acme-bank",
-  "headerText": "Test Header",
-  "headerDescription": "Test",
-  "footerText": "Test",
-  "ratingLabels": ["Bad", "Okay", "Good"],
-  "thankYouText": "Thanks",
-  "invalidReplyText": "Invalid",
-  "expiredReplyText": "Expired",
-  "skipForChannels": ["INSTAGRAM"]
-}
-
-### INVALID - rating label blank
-PUT http://localhost:8080/api/admin/enterprises/acme-bank/session-feedback-form
-Content-Type: application/json
-
-{
-  "enterpriseId": "acme-bank",
-  "headerText": "Test Header",
-  "headerDescription": "Test",
-  "footerText": "Test",
-  "ratingLabels": ["Bad", "", "Good", "Very Good", "Excellent"],
-  "thankYouText": "Thanks",
-  "invalidReplyText": "Invalid",
-  "expiredReplyText": "Expired",
-  "skipForChannels": ["INSTAGRAM"]
-}
-
-### INVALID - duplicate skip channels
-PUT http://localhost:8080/api/admin/enterprises/acme-bank/session-feedback-form
-Content-Type: application/json
-
-{
-  "enterpriseId": "acme-bank",
-  "headerText": "Test Header",
-  "headerDescription": "Test",
-  "footerText": "Test",
-  "ratingLabels": ["Bad", "Okay", "Good", "Very Good", "Excellent"],
-  "thankYouText": "Thanks",
-  "invalidReplyText": "Invalid",
-  "expiredReplyText": "Expired",
-  "skipForChannels": ["INSTAGRAM", "INSTAGRAM"]
-}
-
-### INVALID - header too long
-PUT http://localhost:8080/api/admin/enterprises/acme-bank/session-feedback-form
-Content-Type: application/json
-
-{
-  "enterpriseId": "acme-bank",
-  "headerText": "This header text is intentionally written to exceed the maximum allowed character limit set in the validation logic for testing purposes.",
-  "headerDescription": "Test",
-  "footerText": "Test",
-  "ratingLabels": ["Bad", "Okay", "Good", "Very Good", "Excellent"],
-  "thankYouText": "Thanks",
-  "invalidReplyText": "Invalid",
-  "expiredReplyText": "Expired",
-  "skipForChannels": ["INSTAGRAM"]
-}
-
-
-

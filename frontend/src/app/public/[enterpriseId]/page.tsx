@@ -86,7 +86,7 @@ export default async function PublicEnterprisePage({ params }: Props) {
                         <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
                             {isAcme
                                 ? "Use these links to verify all required customer-facing feedback states."
-                                : "Open the current Uber public feedback request to see the latest published admin configuration."}
+                                : "Use these links to open the current Uber feedback form and backup active forms powered by the latest published admin configuration."}
                         </p>
                     </div>
 
@@ -124,11 +124,29 @@ export default async function PublicEnterprisePage({ params }: Props) {
                             />
                         </div>
                     ) : (
-                        <div className="mt-8">
+                        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
                             <StateCard
-                                title="Open Uber Feedback Form"
-                                description="Open the live Uber public feedback request powered by the latest saved admin configuration."
-                                href="/feedback/fb-uber-valid-001"
+                                title="Active Feedback"
+                                description="Open the main valid active Uber feedback request."
+                                href="/feedback/fb-uber-valid-002"
+                                accent="violet"
+                            />
+                            <StateCard
+                                title="Backup Active Feedback 1"
+                                description="Use this backup Uber feedback link if the main one has already been submitted."
+                                href="/feedback/fb-uber-valid-003"
+                                accent="violet"
+                            />
+                            <StateCard
+                                title="Backup Active Feedback 2"
+                                description="Use this second backup Uber feedback link if another active one has already been used."
+                                href="/feedback/fb-uber-valid-004"
+                                accent="violet"
+                            />
+                            <StateCard
+                                title="Backup Active Feedback 3"
+                                description="Use this third backup Uber feedback link if you need one more active demo form."
+                                href="/feedback/fb-uber-valid-005"
                                 accent="violet"
                             />
                         </div>

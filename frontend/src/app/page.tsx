@@ -85,10 +85,14 @@ export default function HomePage() {
                                 {card.description}
                             </p>
 
-                            <div className="mt-8 inline-flex items-center rounded-xl px-4 py-2 text-sm font-semibold text-slate-950 transition group-hover:opacity-90">
-                <span className={card.accent.split(" ").find((c) => c.startsWith("bg-"))}>
-                  {card.buttonText}
-                </span>
+                            <div className="mt-8">
+                                <div
+                                    className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-md transition transform 
+    ${card.accent.split(" ").find((c) => c.startsWith("bg-"))} 
+    group-hover:scale-105 group-hover:shadow-lg active:scale-95`}
+                                >
+                                    {card.buttonText}
+                                </div>
                             </div>
                         </Link>
                     ))}

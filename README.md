@@ -45,8 +45,6 @@ Each enterprise has:
 
 ## ✨ Features
 
-## ✨ Features
-
 ### 🧑‍💼 Admin Portal (Enterprise-Based)
 
 - Multi-tenant support using dynamic `enterpriseId` (e.g., Acme Bank, Uber)

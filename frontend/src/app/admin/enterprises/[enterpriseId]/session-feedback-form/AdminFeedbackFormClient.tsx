@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type FeedbackFormConfig = {
     enterpriseId: string;
@@ -25,6 +25,13 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
     const [loading, setLoading] = useState(false);
     const [saved, setSaved] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [showHeaderDescription, setShowHeaderDescription] = useState(
+        Boolean(initialData.headerDescription?.trim())
+    );
+    const [showFooter, setShowFooter] = useState(Boolean(initialData.footerText?.trim()));
+
+    const isUber = form.enterpriseId === "uber";
 
     const updateField = (field: keyof FeedbackFormConfig, value: string) => {
         setSaved(false);
@@ -65,6 +72,12 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
         setSaved(false);
         setError(null);
 
+        const payload: FeedbackFormConfig = {
+            ...form,
+            headerDescription: showHeaderDescription ? form.headerDescription : "",
+            footerText: showFooter ? form.footerText : "",
+        };
+
         try {
             const res = await fetch(
                 `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/enterprises/${form.enterpriseId}/session-feedback-form`,
@@ -73,7 +86,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(form),
+                    body: JSON.stringify(payload),
                 }
             );
 
@@ -82,17 +95,17 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
 
                 try {
                     const errorData = await res.json();
-
                     if (errorData?.message) {
                         message = errorData.message;
                     }
                 } catch {
-                    // fallback message
+                    // use default
                 }
 
                 throw new Error(message);
             }
 
+            setForm(payload);
             setSaved(true);
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -105,12 +118,86 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
         }
     };
 
+    const validationHints = useMemo(
+        () => [
+            "Header text is required and must be 120 characters or fewer.",
+            "Header description is optional and must be 300 characters or fewer.",
+            "Footer text is optional and must be 200 characters or fewer.",
+            "Exactly 5 rating labels are required, and each label must be 30 characters or fewer.",
+            "Thank you, invalid, and expired messages are required.",
+            "Duplicate skip channels are not allowed.",
+        ],
+        []
+    );
+
     const inputClassName =
         "w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20";
 
     return (
         <div className="mt-8 grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
             <div className="space-y-8">
+                {isUber && (
+                    <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+                        <h2 className="text-xl font-semibold text-white">Display Controls</h2>
+                        <p className="mt-2 text-sm leading-6 text-slate-400">
+                            Use these toggles to control whether optional sections appear in the
+                            public feedback experience.
+                        </p>
+
+                        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                            <label
+                                className={`flex cursor-pointer items-center justify-between rounded-2xl border px-4 py-4 transition ${
+                                    showHeaderDescription
+                                        ? "border-violet-400 bg-violet-400/10"
+                                        : "border-slate-700 bg-slate-950/70 hover:border-slate-500"
+                                }`}
+                            >
+                                <div>
+                                    <p className="font-medium text-white">Show Header Description</p>
+                                    <p className="mt-1 text-sm text-slate-400">
+                                        Include or hide the descriptive text below the title.
+                                    </p>
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    checked={showHeaderDescription}
+                                    onChange={() => {
+                                        setSaved(false);
+                                        setError(null);
+                                        setShowHeaderDescription((prev) => !prev);
+                                    }}
+                                    className="h-4 w-4 accent-violet-400"
+                                />
+                            </label>
+
+                            <label
+                                className={`flex cursor-pointer items-center justify-between rounded-2xl border px-4 py-4 transition ${
+                                    showFooter
+                                        ? "border-violet-400 bg-violet-400/10"
+                                        : "border-slate-700 bg-slate-950/70 hover:border-slate-500"
+                                }`}
+                            >
+                                <div>
+                                    <p className="font-medium text-white">Show Footer Text</p>
+                                    <p className="mt-1 text-sm text-slate-400">
+                                        Include or hide the footer note in the public view.
+                                    </p>
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    checked={showFooter}
+                                    onChange={() => {
+                                        setSaved(false);
+                                        setError(null);
+                                        setShowFooter((prev) => !prev);
+                                    }}
+                                    className="h-4 w-4 accent-violet-400"
+                                />
+                            </label>
+                        </div>
+                    </section>
+                )}
+
                 <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
                     <h2 className="text-xl font-semibold text-white">Form Content</h2>
                     <p className="mt-2 text-sm leading-6 text-slate-400">
@@ -127,7 +214,11 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                                 onChange={(e) => updateField("headerText", e.target.value)}
                                 className={inputClassName}
                                 placeholder="Enter form header"
+                                maxLength={120}
                             />
+                            <p className="mt-2 text-xs text-slate-500">
+                                {form.headerText.length}/120 characters
+                            </p>
                         </div>
 
                         <div>
@@ -140,7 +231,11 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                                 className={inputClassName}
                                 rows={4}
                                 placeholder="Enter a short description for the feedback form"
+                                maxLength={300}
                             />
+                            <p className="mt-2 text-xs text-slate-500">
+                                {form.headerDescription.length}/300 characters
+                            </p>
                         </div>
 
                         <div>
@@ -152,7 +247,11 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                                 onChange={(e) => updateField("footerText", e.target.value)}
                                 className={inputClassName}
                                 placeholder="Enter footer text"
+                                maxLength={200}
                             />
+                            <p className="mt-2 text-xs text-slate-500">
+                                {form.footerText.length}/200 characters
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -174,7 +273,11 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                                     onChange={(e) => updateRatingLabel(index, e.target.value)}
                                     className={inputClassName}
                                     placeholder={`Label for rating ${index + 1}`}
+                                    maxLength={30}
                                 />
+                                <p className="mt-2 text-xs text-slate-500">
+                                    {label.length}/30 characters
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -197,6 +300,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                                 onChange={(e) => updateField("thankYouText", e.target.value)}
                                 className={inputClassName}
                                 placeholder="Enter thank you message"
+                                maxLength={200}
                             />
                         </div>
 
@@ -209,6 +313,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                                 onChange={(e) => updateField("invalidReplyText", e.target.value)}
                                 className={inputClassName}
                                 placeholder="Enter invalid link message"
+                                maxLength={200}
                             />
                         </div>
 
@@ -221,6 +326,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                                 onChange={(e) => updateField("expiredReplyText", e.target.value)}
                                 className={inputClassName}
                                 placeholder="Enter expired link message"
+                                maxLength={200}
                             />
                         </div>
                     </div>
@@ -264,6 +370,25 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                 </section>
 
                 <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
+                    <h2 className="text-xl font-semibold text-white">Validation Rules</h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                        These mirror the backend validation logic so the admin understands the
+                        publishing rules clearly.
+                    </p>
+
+                    <div className="mt-6 space-y-3">
+                        {validationHints.map((hint) => (
+                            <div
+                                key={hint}
+                                className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"
+                            >
+                                {hint}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                         <button
                             type="button"
@@ -271,13 +396,13 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                             disabled={loading}
                             className="inline-flex items-center justify-center rounded-2xl bg-sky-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            {loading ? "Saving..." : "Save Changes"}
+                            {loading ? "Publishing..." : "Publish Changes"}
                         </button>
 
                         {saved && (
                             <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
                                 <p className="text-sm text-emerald-300">
-                                    Changes saved successfully.
+                                    Changes saved successfully and are now reflected in the public flow.
                                 </p>
                             </div>
                         )}
@@ -306,7 +431,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                     <div className="mt-6 rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-inner">
                         <h3 className="text-2xl font-bold text-white">{form.headerText}</h3>
 
-                        {form.headerDescription && (
+                        {showHeaderDescription && form.headerDescription && (
                             <p className="mt-3 text-sm leading-7 text-slate-300">
                                 {form.headerDescription}
                             </p>
@@ -326,7 +451,7 @@ export default function AdminFeedbackFormClient({ initialData }: Props) {
                             ))}
                         </div>
 
-                        {form.footerText && (
+                        {showFooter && form.footerText && (
                             <p className="mt-6 border-t border-slate-800 pt-4 text-sm leading-6 text-slate-400">
                                 {form.footerText}
                             </p>

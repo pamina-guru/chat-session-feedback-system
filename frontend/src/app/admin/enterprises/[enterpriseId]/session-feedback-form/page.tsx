@@ -63,6 +63,8 @@ export default async function AdminFeedbackPage({ params }: Props) {
         return <AdminStateCard title="No Config Found" />;
     }
 
+    const isUber = enterpriseId === "uber";
+
     return (
         <main className="min-h-screen bg-slate-950 px-6 py-12 text-white">
             <div className="mx-auto max-w-6xl">
@@ -72,12 +74,14 @@ export default async function AdminFeedbackPage({ params }: Props) {
                             Admin Flow
                         </p>
                         <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                            Session Feedback Form Configuration
+                            {isUber
+                                ? "Uber Feedback Form Builder"
+                                : "Session Feedback Form Configuration"}
                         </h1>
                         <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
-                            Customize the enterprise feedback form, update the messaging shown
-                            to customers, manage channel exclusions, and preview the public
-                            experience before saving changes.
+                            {isUber
+                                ? "Configure the Uber feedback form, manage required messages and validation-aware content, preview the customer-facing experience live, and publish the changes for the public flow."
+                                : "Customize the enterprise feedback form, update the messaging shown to customers, manage channel exclusions, and preview the public experience before saving changes."}
                         </p>
                     </div>
 

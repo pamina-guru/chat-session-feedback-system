@@ -63,7 +63,6 @@ class DataSeeder {
         feedbackRequestRepository: FeedbackRequestRepository
     ) {
         val now = Instant.now()
-
         val april30 = Instant.parse("2026-04-30T23:59:59Z")
 
         saveIfMissing(
@@ -161,6 +160,46 @@ class DataSeeder {
         saveIfMissing(
             feedbackRequestRepository = feedbackRequestRepository,
             feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-uber-valid-002",
+                enterpriseId = "uber",
+                channel = Channel.WEB,
+                expiresAt = april30
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-uber-valid-003",
+                enterpriseId = "uber",
+                channel = Channel.WEB,
+                expiresAt = april30
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-uber-valid-004",
+                enterpriseId = "uber",
+                channel = Channel.WEB,
+                expiresAt = april30
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
+                feedbackId = "fb-uber-valid-005",
+                enterpriseId = "uber",
+                channel = Channel.WEB,
+                expiresAt = april30
+            )
+        )
+
+        saveIfMissing(
+            feedbackRequestRepository = feedbackRequestRepository,
+            feedbackRequest = FeedbackRequest(
                 feedbackId = "fb-uber-expired-001",
                 enterpriseId = "uber",
                 channel = Channel.WEB,
@@ -179,7 +218,6 @@ class DataSeeder {
                 rating = 5
             )
         )
-
     }
 
     private fun saveIfMissing(
